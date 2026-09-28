@@ -600,6 +600,49 @@ const [savingProfile, setSavingProfile] = useState(false);
   );
 }
 
+async function createProfile(e: React.FormEvent) {
+  e.preventDefault();
+
+  const cleanUsername = profileUsername.trim().toLowerCase();
+
+  if (cleanUsername.length < 3) {
+    alert("Username must be at least 3 characters.");
+    return;
+  }
+
+  if (!/^[a-z0-9_]+$/.test(cleanUsername)) {
+    alert("Username can only contain letters, numbers and underscores.");
+    return;
+  }
+
+  setSavingProfile(true);
+
+  const { error } = await supabase
+    .from("profiles")
+    .insert({
+      id: userId,
+      username: cleanUsername,
+    });
+
+  if (error) {
+    if (error.code === "23505") {
+      alert("That username is already taken.");
+    } else {
+      alert(error.message);
+    }
+
+    setSavingProfile(false);
+    return;
+  }
+
+  setUsername(cleanUsername);
+  setNeedsProfile(false);
+  setSavingProfile(false);
+
+  await loadReminders(userId);
+  await loadFriends(userId);
+}
+
   return (
     <main className="min-h-screen bg-[#080808] text-white">
 
