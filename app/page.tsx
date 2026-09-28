@@ -478,6 +478,48 @@ const [savingProfile, setSavingProfile] = useState(false);
 
   await loadFriends(userId);
 }
+async function createProfile(e: React.FormEvent) {
+  e.preventDefault();
+
+  const cleanUsername = profileUsername.trim().toLowerCase();
+
+  if (cleanUsername.length < 3) {
+    alert("Username must be at least 3 characters.");
+    return;
+  }
+
+  if (!/^[a-z0-9_]+$/.test(cleanUsername)) {
+    alert("Username can only contain letters, numbers and underscores.");
+    return;
+  }
+
+  setSavingProfile(true);
+
+  const { error } = await supabase
+    .from("profiles")
+    .insert({
+      id: userId,
+      username: cleanUsername,
+    });
+
+  if (error) {
+    if (error.code === "23505") {
+      alert("That username is already taken.");
+    } else {
+      alert(error.message);
+    }
+
+    setSavingProfile(false);
+    return;
+  }
+
+  setUsername(cleanUsername);
+  setNeedsProfile(false);
+  setSavingProfile(false);
+
+  await loadReminders(userId);
+  await loadFriends(userId);
+}
 
   async function rejectRequest(
     requestId: string
@@ -525,6 +567,7 @@ const [savingProfile, setSavingProfile] = useState(false);
       timeStyle: "short",
     });
   }
+  
 
   if (checking) {
     return (
@@ -598,49 +641,6 @@ const [savingProfile, setSavingProfile] = useState(false);
       </div>
     </main>
   );
-}
-
-async function createProfile(e: React.FormEvent) {
-  e.preventDefault();
-
-  const cleanUsername = profileUsername.trim().toLowerCase();
-
-  if (cleanUsername.length < 3) {
-    alert("Username must be at least 3 characters.");
-    return;
-  }
-
-  if (!/^[a-z0-9_]+$/.test(cleanUsername)) {
-    alert("Username can only contain letters, numbers and underscores.");
-    return;
-  }
-
-  setSavingProfile(true);
-
-  const { error } = await supabase
-    .from("profiles")
-    .insert({
-      id: userId,
-      username: cleanUsername,
-    });
-
-  if (error) {
-    if (error.code === "23505") {
-      alert("That username is already taken.");
-    } else {
-      alert(error.message);
-    }
-
-    setSavingProfile(false);
-    return;
-  }
-
-  setUsername(cleanUsername);
-  setNeedsProfile(false);
-  setSavingProfile(false);
-
-  await loadReminders(userId);
-  await loadFriends(userId);
 }
 
   return (
