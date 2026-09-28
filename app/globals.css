@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* Remindly theme */
+
+:root {
+  --background: #080808;
+  --foreground: #ffffff;
+
+  --motion-slow: 700ms;
+  --motion-slower: 1000ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Smooth UI motion */
+
+button,
+input,
+div {
+  transition-property:
+    transform,
+    opacity,
+    background-color,
+    border-color,
+    box-shadow,
+    filter;
+
+  transition-duration: var(--motion-slow);
+  transition-timing-function: var(--motion-ease);
+}
+
+/* Button interaction */
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* Reminder entrance animation */
+
+@keyframes remindlyFade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.remindly-enter {
+  animation: remindlyFade var(--motion-slower) var(--motion-ease);
+}
